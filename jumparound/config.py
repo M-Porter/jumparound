@@ -46,7 +46,7 @@ class Config:
     def load(self) -> None:
         if not os.path.exists(self._get_full_config_dirname()):
             os.makedirs(self._get_full_config_dirname())
-        with open(self._get_full_config_file_path(), "w+") as f:
+        with open(self._get_full_config_file_path(), "w+", newline="") as f:
             data = yaml.load(f, Loader=yaml.SafeLoader) or {}
             self.cache_file = data.get("cache_file", self._default_cache_file_name)
             self.search_excludes = data.get(
@@ -58,10 +58,6 @@ class Config:
             self.path_stops = data.get("path_stops", self._default_path_stops)
             f.seek(0)
             f.write(self._dump())
-
-    @staticmethod
-    def _value_or(data: dict, key: str, default: any):
-        return data[key] if key in data else default
 
     def _dump(self):
         return yaml.dump(
