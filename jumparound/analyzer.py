@@ -15,15 +15,16 @@ class Analyzer:
         self._config = config
         self._cache_repo = CacheRepo(config)
 
-    def run(self, callback=None, debug=False) -> None:
-        cache = self._cache_repo.load()
-        if not cache.is_stale():
-            if callback:
-                callback(cache.directories)
-            if debug:
-                rprint("loading from cache")
-                rprint(cache.directories)
-            return
+    def run(self, callback=None, debug=False, use_cache=True) -> None:
+        if use_cache:
+            cache = self._cache_repo.load()
+            if not cache.is_stale():
+                if callback:
+                    callback(cache.directories)
+                if debug:
+                    rprint("loading from cache")
+                    rprint(cache.directories)
+                return
 
         self._found = []
         threads = []

@@ -6,8 +6,8 @@ authors = ["Matt Porter <mtp5129@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-click = "^8.0.1"
-textual = "^0.1.10"
+click = "^8.0.3"
+textual = "^0.1.12"
 PyYAML = "^5.4.1"
 
 [tool.poetry.dev-dependencies]
