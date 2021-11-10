@@ -2,6 +2,7 @@ from typing import List
 
 import click
 from rich import print as rprint
+from rich.console import Console
 
 from . import __cli_name__, __version__
 from .analyzer import Analyzer
@@ -24,7 +25,9 @@ def to():
         callback_val = val
 
     JumpAroundApp.run(
-        title=__cli_name__, log="debug.log", on_quit_callback=on_quit_callback
+        title=__cli_name__,
+        log="debug.log",
+        on_quit_callback=on_quit_callback,
     )
 
     if callback_val:
