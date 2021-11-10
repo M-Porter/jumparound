@@ -1,8 +1,8 @@
 import threading
 import os
 from typing import List
-from jumparound.cache import Cache, CacheRepo
-from jumparound.config import Config
+from .cache import Cache, CacheRepo
+from .config import Config
 from rich import print as rprint
 
 

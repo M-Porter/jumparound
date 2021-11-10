@@ -31,7 +31,7 @@ class Config:
         "requirements.txt",
     ]
 
-    _jumper_dirname: str = ".jumper"
+    _jumper_dirname: str = ".jumparound"
     _user_home: str
 
     cache_file: str

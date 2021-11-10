@@ -9,7 +9,6 @@ from textual import events
 from textual.keys import Keys
 from textual.reactive import Reactive
 from textual.widget import Widget
-
 from .match import match_items
 
 

@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 import os
 from typing import Dict, List
 from jumparound.config import Config
