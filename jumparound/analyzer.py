@@ -1,9 +1,11 @@
-import threading
 import os
+import threading
 from typing import List
+
+from rich import print as rprint
+
 from .cache import Cache, CacheRepo
 from .config import Config
-from rich import print as rprint
 
 
 class Analyzer:

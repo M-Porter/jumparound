@@ -1,14 +1,16 @@
+import string
 from threading import Thread
 from typing import List, Union
-import string
-from .config import Config
-from .analyzer import Analyzer
+
 from rich.console import RenderableType
-from textual.app import App
 from textual import events
+from textual.app import App
 from textual.keys import Keys
 from textual.reactive import Reactive
 from textual.widget import Widget
+
+from .analyzer import Analyzer
+from .config import Config
 from .match import match_items
 
 

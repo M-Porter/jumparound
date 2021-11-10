@@ -1,10 +1,12 @@
 from typing import List
+
 import click
 from rich import print as rprint
-from .config import Config
-from .analyzer import Analyzer
-from .tui import JumpAroundApp
+
 from . import __cli_name__, __version__
+from .analyzer import Analyzer
+from .config import Config
+from .tui import JumpAroundApp
 
 
 @click.group()

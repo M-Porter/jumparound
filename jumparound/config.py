@@ -1,5 +1,6 @@
-from typing import List
 import os
+from typing import List
+
 import yaml
 
 

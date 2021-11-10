@@ -1,11 +1,11 @@
-from dataclasses import field
 import os
-from typing import Dict, List
-from jumparound.config import Config
-import yaml
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from time import time
+from typing import Dict, List
 
+import yaml
+
+from jumparound.config import Config
 
 # stale cache time in seconds
 STALE_CACHE_TIME = 86400
