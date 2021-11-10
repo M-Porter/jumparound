@@ -17,14 +17,25 @@ def cli():
 
 @click.command()
 def to():
-    JumpAroundApp.run(title=__cli_name__, log="debug.log")
+    callback_val = None
+
+    def on_quit_callback(val: str) -> None:
+        nonlocal callback_val
+        callback_val = val
+
+    JumpAroundApp.run(
+        title=__cli_name__, log="debug.log", on_quit_callback=on_quit_callback
+    )
+
+    if callback_val:
+        print(callback_val)
 
 
 @click.command()
 def analyze():
     conf = Config()
 
-    def print_callback(projects: List[str]):
+    def print_callback(projects: List[str]) -> None:
         rprint(f"Found {len(projects)} projects!")
         rprint()
         rprint(projects)

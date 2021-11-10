@@ -1,4 +1,5 @@
 import string
+from collections import Callable
 from threading import Thread
 from typing import List, Union
 
@@ -50,6 +51,8 @@ class InputBox(Widget):
 
 
 class JumpAroundApp(App):
+    on_quit_callback: None
+
     input_text: Union[Reactive[str], str] = Reactive("")
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
     projects: Union[Reactive[List[str]], List[str]] = Reactive([])
@@ -61,11 +64,19 @@ class JumpAroundApp(App):
     analyzer: Analyzer
     config: Config
 
+    def __init__(self, on_quit_callback: Callable[[str], None] = None, **kwargs):
+        super().__init__(**kwargs)
+        self.on_quit_callback = on_quit_callback
+
     async def on_load(self) -> None:
         self.console._highlight = False  # turn of rich's auto-highlighting
         await self.bind(Keys.Escape, "quit")
 
-    def on_key(self, key: events.Key) -> None:
+    async def on_key(self, key: events.Key) -> None:
+        if key.key == Keys.Enter:
+            self.on_quit_callback(self.filtered_projects[self.cursor_pos] or "")
+            await self.action_quit()
+
         # Handle up down cursor pos events
         if key.key in [Keys.Up, Keys.Down]:
             self.log(f"cursor_pos: {self.cursor_pos}")
