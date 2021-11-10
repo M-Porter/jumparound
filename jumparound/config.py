@@ -44,10 +44,12 @@ class Config:
         self.load()
 
     def load(self) -> None:
-        if not os.path.exists(self._get_full_config_dirname()):
-            os.makedirs(self._get_full_config_dirname())
-        with open(self._get_full_config_file_path(), "w+", newline="") as f:
+        if not os.path.exists(self.get_full_config_dirname()):
+            os.makedirs(self.get_full_config_dirname())
+
+        with open(self.get_full_config_file_path(), "w+", newline="") as f:
             data = yaml.load(f, Loader=yaml.SafeLoader) or {}
+
             self.cache_file = data.get("cache_file", self._default_cache_file_name)
             self.search_excludes = data.get(
                 "search_excludes", self._default_search_excludes
@@ -56,6 +58,7 @@ class Config:
                 "search_includes", self._default_search_includes
             )
             self.path_stops = data.get("path_stops", self._default_path_stops)
+
             f.seek(0)
             f.write(self._dump())
 
@@ -70,14 +73,14 @@ class Config:
             Dumper=yaml.SafeDumper,
         )
 
-    def _get_full_config_dirname(self) -> str:
+    def get_full_config_dirname(self) -> str:
         return os.path.join(self._user_home, self._jumper_dirname)
 
-    def _get_full_config_file_path(self) -> str:
-        return os.path.join(self._get_full_config_dirname(), "config.yaml")
+    def get_full_config_file_path(self) -> str:
+        return os.path.join(self.get_full_config_dirname(), "config.yaml")
 
     def cache_file_path(self) -> str:
-        return os.path.join(self._get_full_config_dirname(), self.cache_file)
+        return os.path.join(self.get_full_config_dirname(), self.cache_file)
 
     def search_include_paths(self) -> map:
         return map(

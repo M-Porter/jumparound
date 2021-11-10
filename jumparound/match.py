@@ -3,7 +3,7 @@ from typing import List
 
 
 def match_items(needle: str, haystack: List) -> List:
-    r = '.*' + '.*'.join(map(re.escape, needle.split())) + '.*'
+    r = ".*" + ".*".join(map(re.escape, needle.split())) + ".*"
     rf = re.IGNORECASE | re.UNICODE
 
     def search_func(x: str):

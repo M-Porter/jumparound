@@ -73,7 +73,7 @@ class JumpAroundApp(App):
             #   - arrow down = increment
             if key.key == Keys.Up:
                 self.cursor_pos = max(0, self.cursor_pos - 1)
-            elif key.kesy == Keys.Down:
+            elif key.key == Keys.Down:
                 self.cursor_pos = min(self.console.height - 2, self.cursor_pos + 1)
             return
 
@@ -100,7 +100,9 @@ class JumpAroundApp(App):
         self.do_search()
 
     def do_search(self):
-        if self.projects and len(self.projects) > 0:
+        if not self.input_text.strip():
+            self.filtered_projects = self.projects
+        elif self.projects and len(self.projects) > 0:
             self.filtered_projects = match_items(self.input_text, self.projects)
         else:
             self.filtered_projects = self.projects
@@ -113,8 +115,10 @@ class JumpAroundApp(App):
         self.analyzer = Analyzer(self.config)
         Thread(
             target=self.analyzer.run,
-            args=(self.set_projects,),
-            kwargs={"use_cache": False},
+            kwargs={
+                "callback": self.set_projects,
+                "use_cache": True,
+            },
         ).start()
 
         grid = await self.view.dock_grid(edge="left", name="left")

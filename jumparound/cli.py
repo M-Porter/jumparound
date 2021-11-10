@@ -1,6 +1,9 @@
-from jumparound.config import Config
-from jumparound.analyzer import Analyzer
+from typing import List
+
 import click
+from rich import print as rprint
+from .config import Config
+from .analyzer import Analyzer
 from .tui import JumpAroundApp
 from . import __cli_name__
 
@@ -17,8 +20,19 @@ def to():
 
 @click.command()
 def analyze():
-    analyzer = Analyzer(Config())
-    analyzer.run(debug=True)
+    conf = Config()
+
+    def print_callback(projects: List[str]):
+        rprint(f"Found {len(projects)} projects!")
+        rprint()
+        rprint(projects)
+        rprint()
+        rprint(
+            f"If any of these seem incorrectly, try updating your config located at {conf.get_full_config_file_path()}"
+        )
+
+    analyzer = Analyzer(conf)
+    analyzer.run(callback=print_callback, use_cache=False)
 
 
 cli.add_command(to)
