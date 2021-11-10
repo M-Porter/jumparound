@@ -1,3 +1,3 @@
 # jumparound
 
-So get out your seat and jump around!
+Quickly jump around between your projects.
