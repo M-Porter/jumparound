@@ -21,6 +21,7 @@ class Config:
         "/venv",
         "/ios/Pods",
         "/.idea",
+        "/go/pkg",
     ]
     _default_path_stops: List[str] = [
         ".git",
