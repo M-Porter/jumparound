@@ -3,7 +3,7 @@ from collections import Callable
 from threading import Thread
 from typing import List, Union
 
-from rich.console import Console, RenderableType
+from rich.console import RenderableType, Console
 from textual import events
 from textual.app import App
 from textual.keys import Keys
@@ -66,10 +66,7 @@ class JumpAroundApp(App):
 
     def __init__(self, *args, on_quit_callback: Callable[[str], None] = None, **kwargs):
         self.on_quit_callback = on_quit_callback
-
         super().__init__(*args, **kwargs)
-
-        self.console._highlight = False  # has to be done after super().__init()
 
     async def on_load(self) -> None:
         await self.bind(Keys.Escape, "quit")
@@ -92,7 +89,7 @@ class JumpAroundApp(App):
             return
 
         # Handle text input events
-        if key.key == Keys.ControlH:
+        if key.key == Keys.ControlH:  # backspace / delete
             self.input_text = self.input_text[:-1]
         elif key.key == Keys.Delete:
             self.input_text = ""

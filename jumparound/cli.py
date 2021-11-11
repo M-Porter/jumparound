@@ -24,9 +24,17 @@ def to():
         nonlocal callback_val
         callback_val = val
 
+    console = Console(
+        force_terminal=True,
+        force_interactive=False,
+        stderr=True,
+        highlight=False,
+    )
+
     JumpAroundApp.run(
         title=__cli_name__,
         log="debug.log",
+        console=console,
         on_quit_callback=on_quit_callback,
     )
 
