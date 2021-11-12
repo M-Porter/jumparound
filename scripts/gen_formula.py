@@ -7,8 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 
 resource_template = Template("""resource \"$name\" do
-    url "$url"
-    sha256 "$sha256"
+  url "$url"
+  sha256 "$sha256"
 end
 """)
 
