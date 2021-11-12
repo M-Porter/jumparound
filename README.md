@@ -37,4 +37,8 @@ j() {
 
 ### Generate `resource` blocks for the brew Formula
 
-* `poetry run ./scripts/gen_formula.py`
+* `poetry run ./scripts/gen-formula.py`
+
+### Using the `scripts/hooks/`
+
+* `./scripts/setup-hooks.sh`
