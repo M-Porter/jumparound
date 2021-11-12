@@ -3,7 +3,7 @@ from collections import Callable
 from threading import Thread
 from typing import List, Union
 
-from rich.console import RenderableType, Console
+from rich.console import Console, RenderableType
 from textual import events
 from textual.app import App
 from textual.keys import Keys

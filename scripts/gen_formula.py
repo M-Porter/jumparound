@@ -3,18 +3,23 @@
 import re
 import subprocess
 from string import Template
+
 import requests
 from bs4 import BeautifulSoup
 
-resource_template = Template("""resource \"$name\" do
+resource_template = Template(
+    """resource \"$name\" do
   url "$url"
   sha256 "$sha256"
 end
-""")
+"""
+)
 
 
 def gen_formula():
-    requirements = subprocess.check_output(["poetry", "export", "--without-hashes"]).decode("utf-8")
+    requirements = subprocess.check_output(
+        ["poetry", "export", "--without-hashes"]
+    ).decode("utf-8")
 
     for line in requirements.splitlines():
         requirements = str(line).split(";", 1)[0]
@@ -34,7 +39,7 @@ def gen_formula():
                 rr = requests.get(pkg_url + link["href"])
                 good_soup = BeautifulSoup(rr.text, features="html.parser")
                 ss = good_soup.body.find(text=re.compile(re.escape("SHA256")))
-                dep_hash = ss.parent.parent.find('code').text
+                dep_hash = ss.parent.parent.find("code").text
 
         if dep_hash and dep_url:
             d = {
