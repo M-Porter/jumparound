@@ -25,3 +25,16 @@ j() {
     cd "$(jumparound to)"
 }
 ```
+
+## Development
+
+### Setup
+
+* Have python `poetry` installed.
+* Clone this repository.
+* Run `poetry install`
+* You should now be able to run `poetry run jumparound`
+
+### Generate `resource` blocks for the brew Formula
+
+* `poetry run ./scripts/gen_formula.py`
