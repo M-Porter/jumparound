@@ -1,3 +1,4 @@
+import os.path
 import string
 from collections import Callable
 from threading import Thread
@@ -11,7 +12,7 @@ from textual.reactive import Reactive
 from textual.widget import Widget
 
 from .analyzer import Analyzer
-from .config import Config
+from .config import Config, ViewMode
 from .match import match_items
 
 
@@ -31,15 +32,32 @@ class ListBody(Widget):
         lines = []
         if self.items:
             for x in range(min(self.console.height - 1, len(self.items))):
+                line = self.render_item(self.items[x])
                 if x == self.cursor_pos:
                     lines.append(
-                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {self.items[x]} [/white on grey27]"
+                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {line} [/white on grey27]"
                     )
                 else:
-                    lines.append(
-                        f"[grey27 on grey27] [/grey27 on grey27] {self.items[x]}"
-                    )
+                    lines.append(f"[grey27 on grey27] [/grey27 on grey27] {line}")
         return "\n".join(lines)
+
+    def render_item(self, item: str):
+        view_mode = self.config.get_view_mode()
+        # view_mode = ViewMode.COMBINED
+
+        if view_mode == ViewMode.BASIC:
+            # only shows the final directory name
+            return os.path.basename(item)
+        elif view_mode == ViewMode.COMBINED:
+            # path is displayed in the format of `folder (/path/to)`
+            bn = os.path.basename(item)
+            dn = os.path.dirname(item)
+            return f"{bn} ({dn}"
+        elif view_mode == ViewMode.FULL:
+            # the default, shows the full path
+            return item
+        else:
+            return item
 
     def set_cursor_pos(self, cursor_pos: int) -> None:
         self.cursor_pos = cursor_pos
