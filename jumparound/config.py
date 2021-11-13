@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List, Dict, TextIO, Union
+from typing import Dict, List, TextIO, Union
 
 import yaml
 
@@ -89,7 +89,7 @@ class Config:
             "search_excludes": self.search_excludes,
             "search_includes": self.search_includes,
             "path_stops": self.path_stops,
-            "view_mode": self.view_mode.value
+            "view_mode": self.view_mode.value,
         }
 
     def dump(self) -> Union[str, bytes]:
