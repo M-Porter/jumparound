@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-poetry run isort .
-poetry run black .
+CHANGES=$(git diff --name-only --diff-filter=ACM -- '*.py')
+
+# shellcheck disable=SC2086
+poetry run isort $CHANGES
+# shellcheck disable=SC2086
+poetry run black $CHANGES
