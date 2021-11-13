@@ -2,7 +2,11 @@
 
 CHANGES=$(git diff --name-only --diff-filter=ACM -- '*.py')
 
-# shellcheck disable=SC2086
-poetry run isort $CHANGES
-# shellcheck disable=SC2086
-poetry run black $CHANGES
+if [[ -n "$CHANGES" ]]; then
+    # shellcheck disable=SC2086
+    poetry run isort $CHANGES
+    # shellcheck disable=SC2086
+    poetry run black $CHANGES
+else
+    echo "Nothing to lint."
+fi
