@@ -1,16 +1,10 @@
 import os
-from enum import Enum
 from pathlib import Path
 from typing import List
 
 import yaml
 
-
-class ViewMode(Enum):
-    BASIC = 1
-    FULL = 2
-    COMBINED = 3
-
+from .enum import ViewMode
 
 DEFAULT_CACHE_FILE_NAME: str = "cache"
 DEFAULT_SEARCH_INCLUDES: List[str] = [
@@ -74,8 +68,10 @@ class Config:
 
             self.write(f)
 
-    def set_view_mode(self, view_mode: ViewMode):
-        self.view_mode = view_mode
+    def next_view_mode(self):
+        self.view_mode = self.view_mode.next()
+        with self.open() as f:
+            self.write(f)
 
     def get_view_mode(self) -> ViewMode:
         return self.view_mode
