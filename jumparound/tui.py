@@ -18,6 +18,14 @@ from .match import match_items
 class ListBody(Widget):
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
     items: Union[Reactive[List[str]], List[str]] = Reactive([])
+    config: Config
+
+    def __init__(self, *args, config: Config = None, **kwargs):
+        if not config:
+            raise TypeError("ListBody() needs keyword-only argument config")
+        self.config = config
+
+        super().__init__(*args, **kwargs)
 
     def render(self) -> RenderableType:
         lines = []
@@ -119,10 +127,8 @@ class JumpAroundApp(App):
             self.filtered_projects = self.projects
 
     async def on_mount(self, event: events.Mount) -> None:
-        self.input_box = InputBox()
-        self.list_body = ListBody()
-
         self.config = Config()
+
         self.analyzer = Analyzer(self.config)
         Thread(
             target=self.analyzer.run,
@@ -131,6 +137,9 @@ class JumpAroundApp(App):
                 "use_cache": True,
             },
         ).start()
+
+        self.input_box = InputBox()
+        self.list_body = ListBody(config=self.config)
 
         grid = await self.view.dock_grid(edge="left", name="left")
 
