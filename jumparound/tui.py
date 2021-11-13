@@ -43,7 +43,6 @@ class ListBody(Widget):
 
     def render_item(self, item: str):
         view_mode = self.config.get_view_mode()
-        # view_mode = ViewMode.COMBINED
 
         if view_mode == ViewMode.BASIC:
             # only shows the final directory name
@@ -52,7 +51,7 @@ class ListBody(Widget):
             # path is displayed in the format of `folder (/path/to)`
             bn = os.path.basename(item)
             dn = os.path.dirname(item)
-            return f"{bn} ({dn}"
+            return f"{bn} [grey42]({dn})[/grey42]"
         elif view_mode == ViewMode.FULL:
             # the default, shows the full path
             return item
