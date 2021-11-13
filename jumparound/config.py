@@ -1,8 +1,15 @@
 import os
+from enum import Enum
 from pathlib import Path
 from typing import List
 
 import yaml
+
+
+class ViewMode(Enum):
+    BASIC = 1
+    FULL = 2
+    COMBINED = 3
 
 
 class Config:
@@ -42,6 +49,7 @@ class Config:
     search_excludes: List[str]
     search_includes: List[str]
     path_stops: List[str]
+    view_mode: ViewMode
 
     def __init__(self) -> None:
         self._user_home = os.path.expanduser("~")
@@ -51,11 +59,10 @@ class Config:
         if not os.path.exists(self.get_full_config_dirname()):
             os.makedirs(self.get_full_config_dirname())
 
-        config_not_exists = not os.path.exists(self.get_full_config_file_path())
-        if config_not_exists:
+        if not os.path.exists(self.get_full_config_file_path()):
             Path(self.get_full_config_file_path()).touch()
 
-        with open(self.get_full_config_file_path(), "r+", newline="") as f:
+        with self.open() as f:
             data = yaml.load(f, Loader=yaml.SafeLoader) or {}
 
             self.cache_file = data.get("cache_file", self._default_cache_file_name)
@@ -66,10 +73,22 @@ class Config:
                 "search_includes", self._default_search_includes
             )
             self.path_stops = data.get("path_stops", self._default_path_stops)
+            self.view_mode = data.get("view_mode", ViewMode.BASIC)
 
-            if config_not_exists:
-                f.seek(0)
-                f.write(self.dump())
+            self.write(f)
+
+    def set_view_mode(self, view_mode: ViewMode):
+        self.view_mode = view_mode
+
+    def get_view_mode(self) -> ViewMode:
+        return self.view_mode
+
+    def open(self):
+        return open(self.get_full_config_file_path(), "r+", newline="")
+
+    def write(self, f):
+        f.seek(0)
+        f.write(self.dump())
 
     def dump(self):
         return yaml.dump(

@@ -47,6 +47,10 @@ class ListBody(Widget):
     def set_list_values(self, items: List[str]) -> None:
         self.items = items
 
+    async def on_key(self, key: events.Key):
+        if key.key == Keys.Tab:
+            self.log("tab key pressed")
+
 
 class InputBox(Widget):
     input_text: Union[Reactive[str], str] = Reactive("")
