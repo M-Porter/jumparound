@@ -1,5 +1,6 @@
 import os
 from typing import List
+from pathlib import Path
 
 import yaml
 
@@ -33,6 +34,7 @@ class Config:
         "requirements.txt",
     ]
 
+    _config_name: str = "config.yaml"
     _jumper_dirname: str = ".jumparound"
     _user_home: str
 
@@ -49,7 +51,11 @@ class Config:
         if not os.path.exists(self.get_full_config_dirname()):
             os.makedirs(self.get_full_config_dirname())
 
-        with open(self.get_full_config_file_path(), "w+", newline="") as f:
+        config_not_exists = not os.path.exists(self.get_full_config_file_path())
+        if config_not_exists:
+            Path(self.get_full_config_file_path()).touch()
+
+        with open(self.get_full_config_file_path(), "r+", newline="") as f:
             data = yaml.load(f, Loader=yaml.SafeLoader) or {}
 
             self.cache_file = data.get("cache_file", self._default_cache_file_name)
@@ -61,8 +67,9 @@ class Config:
             )
             self.path_stops = data.get("path_stops", self._default_path_stops)
 
-            f.seek(0)
-            f.write(self.dump())
+            if config_not_exists:
+                f.seek(0)
+                f.write(self.dump())
 
     def dump(self):
         return yaml.dump(
@@ -79,7 +86,7 @@ class Config:
         return os.path.join(self._user_home, self._jumper_dirname)
 
     def get_full_config_file_path(self) -> str:
-        return os.path.join(self.get_full_config_dirname(), "config.yaml")
+        return os.path.join(self.get_full_config_dirname(), self._config_name)
 
     def cache_file_path(self) -> str:
         return os.path.join(self.get_full_config_dirname(), self.cache_file)
