@@ -44,7 +44,6 @@ JUMPAROUND_CONFIG_NAME = "config.yaml"
 
 
 class Config:
-    _jumper_dirname: str = ".jumparound"
     _user_home: str
 
     cache_file: str
