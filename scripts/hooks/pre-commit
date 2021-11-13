@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
 
-poetry run isort .
-poetry run black .
+CHANGES=$(git diff --name-only --diff-filter=ACM -- '*.py')
+
+if [[ -n "$CHANGES" ]]; then
+    # shellcheck disable=SC2086
+    poetry run isort $CHANGES
+    # shellcheck disable=SC2086
+    poetry run black $CHANGES
+else
+    echo "Nothing to lint."
+fi

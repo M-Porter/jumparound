@@ -1,9 +1,10 @@
+import os.path
 import string
 from collections import Callable
 from threading import Thread
 from typing import List, Union
 
-from rich.console import Console, RenderableType
+from rich.console import RenderableType
 from textual import events
 from textual.app import App
 from textual.keys import Keys
@@ -12,26 +13,51 @@ from textual.widget import Widget
 
 from .analyzer import Analyzer
 from .config import Config
+from .enum import ViewMode
 from .match import match_items
 
 
 class ListBody(Widget):
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
     items: Union[Reactive[List[str]], List[str]] = Reactive([])
+    config: Config
+
+    def __init__(self, *args, config: Config = None, **kwargs):
+        if not config:
+            raise TypeError("ListBody() needs keyword-only argument config")
+        self.config = config
+        super().__init__(*args, **kwargs)
 
     def render(self) -> RenderableType:
         lines = []
+
         if self.items:
             for x in range(min(self.console.height - 1, len(self.items))):
+                line = self.format_line(self.items[x])
+
                 if x == self.cursor_pos:
                     lines.append(
-                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {self.items[x]} [/white on grey27]"
+                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {line} [/white on grey27]"
                     )
                 else:
-                    lines.append(
-                        f"[grey27 on grey27] [/grey27 on grey27] {self.items[x]}"
-                    )
+                    lines.append(f"[grey27 on grey27] [/grey27 on grey27] {line}")
+
         return "\n".join(lines)
+
+    def format_line(self, item: str):
+        view_mode = self.config.get_view_mode()
+        if view_mode == ViewMode.BASIC:
+            # only shows the final directory name
+            return os.path.basename(item)
+        elif view_mode == ViewMode.COMBINED:
+            # path is displayed in the format of `folder (/path/to)`
+            bn = os.path.basename(item)
+            dn = os.path.dirname(item)
+            return f"{bn} [grey42]({dn})[/grey42]"
+        elif view_mode == ViewMode.FULL:
+            # the default, shows the full path
+            return item
+        return item
 
     def set_cursor_pos(self, cursor_pos: int) -> None:
         self.cursor_pos = cursor_pos
@@ -70,24 +96,26 @@ class JumpAroundApp(App):
 
     async def on_load(self) -> None:
         await self.bind(Keys.Escape, "quit")
+        await self.bind(Keys.ControlI, "rotate_view_mode")
+        await self.bind(Keys.Up, "move_cursor_up")
+        await self.bind(Keys.Down, "move_cursor_down")
+        await self.bind(Keys.Enter, "callback_and_quit")
+
+    async def action_callback_and_quit(self):
+        self.on_quit_callback(self.filtered_projects[self.cursor_pos] or "")
+        await self.action_quit()
+
+    def action_move_cursor_up(self):
+        self.cursor_pos = max(0, self.cursor_pos - 1)
+
+    def action_move_cursor_down(self):
+        self.cursor_pos = min(self.console.height - 2, self.cursor_pos + 1)
+
+    def action_rotate_view_mode(self):
+        self.config.next_view_mode()
+        self.list_body.refresh()
 
     async def on_key(self, key: events.Key) -> None:
-        if key.key == Keys.Enter:
-            self.on_quit_callback(self.filtered_projects[self.cursor_pos] or "")
-            await self.action_quit()
-
-        # Handle up down cursor pos events
-        if key.key in [Keys.Up, Keys.Down]:
-            self.log(f"cursor_pos: {self.cursor_pos}")
-            # Top of list is 0, bottom is n. So:
-            #   - arrow up = decrement
-            #   - arrow down = increment
-            if key.key == Keys.Up:
-                self.cursor_pos = max(0, self.cursor_pos - 1)
-            elif key.key == Keys.Down:
-                self.cursor_pos = min(self.console.height - 2, self.cursor_pos + 1)
-            return
-
         # Handle text input events
         if key.key == Keys.ControlH:  # backspace / delete
             self.input_text = self.input_text[:-1]
@@ -119,10 +147,8 @@ class JumpAroundApp(App):
             self.filtered_projects = self.projects
 
     async def on_mount(self, event: events.Mount) -> None:
-        self.input_box = InputBox()
-        self.list_body = ListBody()
-
         self.config = Config()
+
         self.analyzer = Analyzer(self.config)
         Thread(
             target=self.analyzer.run,
@@ -131,6 +157,9 @@ class JumpAroundApp(App):
                 "use_cache": True,
             },
         ).start()
+
+        self.input_box = InputBox()
+        self.list_body = ListBody(config=self.config)
 
         grid = await self.view.dock_grid(edge="left", name="left")
 
