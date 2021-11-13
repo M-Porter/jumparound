@@ -62,9 +62,9 @@ class Config:
             self.path_stops = data.get("path_stops", self._default_path_stops)
 
             f.seek(0)
-            f.write(self._dump())
+            f.write(self.dump())
 
-    def _dump(self):
+    def dump(self):
         return yaml.dump(
             {
                 "cache_file": self.cache_file,
