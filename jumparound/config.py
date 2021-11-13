@@ -12,36 +12,38 @@ class ViewMode(Enum):
     COMBINED = 3
 
 
-class Config:
-    _default_cache_file_name: str = "cache"
-    _default_search_includes: List[str] = [
-        "development/",
-        "dev/",
-        "xcode-projects/",
-        "repos/",
-    ]
-    _default_search_excludes: List[str] = [
-        "/node_modules",
-        "/bin",
-        "/temp",
-        "/tmp",
-        "/vendor",
-        "/venv",
-        "/ios/Pods",
-        "/.idea",
-        "/go/pkg",
-    ]
-    _default_path_stops: List[str] = [
-        ".git",
-        "Gemfile",
-        "package.json",
-        "go.mod",
-        "setup.py",
-        "pyproject.toml",
-        "requirements.txt",
-    ]
+DEFAULT_CACHE_FILE_NAME: str = "cache"
+DEFAULT_SEARCH_INCLUDES: List[str] = [
+    "development/",
+    "dev/",
+    "xcode-projects/",
+    "repos/",
+]
+DEFAULT_SEARCH_EXCLUDES: List[str] = [
+    "/node_modules",
+    "/bin",
+    "/temp",
+    "/tmp",
+    "/vendor",
+    "/venv",
+    "/ios/Pods",
+    "/.idea",
+    "/go/pkg",
+]
+DEFAULT_PATH_STOPS: List[str] = [
+    ".git",
+    "Gemfile",
+    "package.json",
+    "go.mod",
+    "setup.py",
+    "pyproject.toml",
+    "requirements.txt",
+]
+JUMPAROUND_DIRNAME = ".jumparound"
+JUMPAROUND_CONFIG_NAME = "config.yaml"
 
-    _config_name: str = "config.yaml"
+
+class Config:
     _jumper_dirname: str = ".jumparound"
     _user_home: str
 
@@ -65,14 +67,10 @@ class Config:
         with self.open() as f:
             data = yaml.load(f, Loader=yaml.SafeLoader) or {}
 
-            self.cache_file = data.get("cache_file", self._default_cache_file_name)
-            self.search_excludes = data.get(
-                "search_excludes", self._default_search_excludes
-            )
-            self.search_includes = data.get(
-                "search_includes", self._default_search_includes
-            )
-            self.path_stops = data.get("path_stops", self._default_path_stops)
+            self.cache_file = data.get("cache_file", DEFAULT_CACHE_FILE_NAME)
+            self.search_excludes = data.get("search_excludes", DEFAULT_SEARCH_EXCLUDES)
+            self.search_includes = data.get("search_includes", DEFAULT_SEARCH_INCLUDES)
+            self.path_stops = data.get("path_stops", DEFAULT_PATH_STOPS)
             self.view_mode = data.get("view_mode", ViewMode.BASIC)
 
             self.write(f)
@@ -102,10 +100,10 @@ class Config:
         )
 
     def get_full_config_dirname(self) -> str:
-        return os.path.join(self._user_home, self._jumper_dirname)
+        return os.path.join(self._user_home, JUMPAROUND_DIRNAME)
 
     def get_full_config_file_path(self) -> str:
-        return os.path.join(self.get_full_config_dirname(), self._config_name)
+        return os.path.join(self.get_full_config_dirname(), JUMPAROUND_CONFIG_NAME)
 
     def cache_file_path(self) -> str:
         return os.path.join(self.get_full_config_dirname(), self.cache_file)
