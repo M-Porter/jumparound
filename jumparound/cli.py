@@ -3,6 +3,7 @@ from typing import List
 import click
 from rich import print as rprint
 from rich.console import Console
+from rich.syntax import Syntax
 
 from . import __cli_name__, __version__
 from .analyzer import Analyzer
@@ -59,8 +60,17 @@ def analyze():
     analyzer.run(callback=print_callback, use_cache=False)
 
 
+@click.command()
+def print_config():
+    s = Syntax(Config().dump(), "yaml", dedent=True, background_color=None)
+    c = Console()
+    c.print(s)
+
+
 cli.add_command(to)
 cli.add_command(analyze)
+cli.add_command(print_config)
+
 
 if __name__ == "__main__":
     cli()
