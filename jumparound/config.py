@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Dict, TextIO, Union
 
 import yaml
 
@@ -64,11 +64,11 @@ class Config:
             self.search_excludes = data.get("search_excludes", DEFAULT_SEARCH_EXCLUDES)
             self.search_includes = data.get("search_includes", DEFAULT_SEARCH_INCLUDES)
             self.path_stops = data.get("path_stops", DEFAULT_PATH_STOPS)
-            self.view_mode = data.get("view_mode", ViewMode.BASIC)
+            self.view_mode = ViewMode(data.get("view_mode", ViewMode.BASIC))
 
             self.write(f)
 
-    def next_view_mode(self):
+    def next_view_mode(self) -> None:
         self.view_mode = self.view_mode.next()
         with self.open() as f:
             self.write(f)
@@ -76,23 +76,24 @@ class Config:
     def get_view_mode(self) -> ViewMode:
         return self.view_mode
 
-    def open(self):
+    def open(self) -> TextIO:
         return open(self.get_full_config_file_path(), "r+", newline="")
 
-    def write(self, f):
+    def write(self, f) -> None:
         f.seek(0)
         f.write(self.dump())
 
-    def dump(self):
-        return yaml.dump(
-            {
-                "cache_file": self.cache_file,
-                "search_excludes": self.search_excludes,
-                "search_includes": self.search_includes,
-                "path_stops": self.path_stops,
-            },
-            Dumper=yaml.SafeDumper,
-        )
+    def values(self) -> Dict[str, any]:
+        return {
+            "cache_file": self.cache_file,
+            "search_excludes": self.search_excludes,
+            "search_includes": self.search_includes,
+            "path_stops": self.path_stops,
+            "view_mode": self.view_mode.value
+        }
+
+    def dump(self) -> Union[str, bytes]:
+        return yaml.dump(self.values(), Dumper=yaml.SafeDumper)
 
     def get_full_config_dirname(self) -> str:
         return os.path.join(self._user_home, JUMPAROUND_DIRNAME)
