@@ -1,12 +1,14 @@
 import re
 from typing import List
 
+from .analyzer import Project
 
-def match_items(needle: str, haystack: List) -> List:
+
+def match_items(needle: str, haystack: List[Project]) -> List:
     r = ".*" + ".*".join(map(re.escape, needle.split())) + ".*"
     rf = re.IGNORECASE | re.UNICODE
 
-    def search_func(x: str):
-        return re.search(r, x, flags=rf)
+    def search_func(p: Project):
+        return re.search(r, p.path, flags=rf)
 
     return list(filter(search_func, haystack))

@@ -11,7 +11,7 @@ from textual.keys import Keys
 from textual.reactive import Reactive
 from textual.widget import Widget
 
-from .analyzer import Analyzer
+from .analyzer import Analyzer, Project
 from .config import Config
 from .enum import ViewMode
 from .match import match_items
@@ -19,7 +19,7 @@ from .match import match_items
 
 class ListBody(Widget):
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
-    items: Union[Reactive[List[str]], List[str]] = Reactive([])
+    items: Union[Reactive[List[Project]], List[Project]] = Reactive([])
     config: Config
 
     def __init__(self, *args, config: Config = None, **kwargs):
@@ -44,25 +44,23 @@ class ListBody(Widget):
 
         return "\n".join(lines)
 
-    def format_line(self, item: str):
+    def format_line(self, item: Project):
         view_mode = self.config.get_view_mode()
         if view_mode == ViewMode.BASIC:
             # only shows the final directory name
-            return os.path.basename(item)
+            return item.basename
         elif view_mode == ViewMode.COMBINED:
             # path is displayed in the format of `folder (/path/to)`
-            bn = os.path.basename(item)
-            dn = os.path.dirname(item)
-            return f"{bn} [grey42]({dn})[/grey42]"
+            return f"{item.basename} [grey42]({item.dirname})[/grey42]"
         elif view_mode == ViewMode.FULL:
             # the default, shows the full path
-            return item
-        return item
+            return item.path
+        return item.path
 
     def set_cursor_pos(self, cursor_pos: int) -> None:
         self.cursor_pos = cursor_pos
 
-    def set_list_values(self, items: List[str]) -> None:
+    def set_list_values(self, items: List[Project]) -> None:
         self.items = items
 
 
@@ -77,12 +75,12 @@ class InputBox(Widget):
 
 
 class JumpAroundApp(App):
-    on_quit_callback: None
+    on_quit_callback: Callable[[Project], None] = None
 
     input_text: Union[Reactive[str], str] = Reactive("")
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
-    projects: Union[Reactive[List[str]], List[str]] = Reactive([])
-    filtered_projects: Union[Reactive[List[str]], List[str]] = Reactive([])
+    projects: Union[Reactive[List[Project]], List[Project]] = Reactive([])
+    filtered_projects: Union[Reactive[List[Project]], List[Project]] = Reactive([])
 
     input_box: InputBox
     list_body: ListBody
@@ -90,7 +88,9 @@ class JumpAroundApp(App):
     analyzer: Analyzer
     config: Config
 
-    def __init__(self, *args, on_quit_callback: Callable[[str], None] = None, **kwargs):
+    def __init__(
+        self, *args, on_quit_callback: Callable[[Project], None] = None, **kwargs
+    ):
         self.on_quit_callback = on_quit_callback
         super().__init__(*args, **kwargs)
 
@@ -109,7 +109,8 @@ class JumpAroundApp(App):
         self.cursor_pos = max(0, self.cursor_pos - 1)
 
     def action_move_cursor_down(self):
-        self.cursor_pos = min(self.console.height - 2, self.cursor_pos + 1)
+        max_h = min(len(self.projects) - 1, self.console.height - 2)
+        self.cursor_pos = min(max_h, self.cursor_pos + 1)
 
     def action_rotate_view_mode(self):
         self.config.next_view_mode()
@@ -134,7 +135,7 @@ class JumpAroundApp(App):
     def watch_filtered_projects(self, filtered_projects) -> None:
         self.list_body.set_list_values(filtered_projects)
 
-    def set_projects(self, projects: List[str]) -> None:
+    def set_projects(self, projects: List[Project]) -> None:
         self.projects = projects
         self.do_search()
 

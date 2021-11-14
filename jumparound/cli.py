@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 import click
 from rich import print as rprint
@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.syntax import Syntax
 
 from . import __cli_name__, __version__
-from .analyzer import Analyzer
+from .analyzer import Analyzer, Project
 from .config import Config
 from .tui import JumpAroundApp
 
@@ -19,9 +19,9 @@ def cli():
 
 @click.command()
 def to():
-    callback_val = None
+    callback_val: Union[Project, None] = None
 
-    def on_quit_callback(val: str) -> None:
+    def on_quit_callback(val: Project) -> None:
         nonlocal callback_val
         callback_val = val
 
@@ -40,7 +40,7 @@ def to():
     )
 
     if callback_val:
-        print(callback_val)
+        print(callback_val.path)
 
 
 @click.command()

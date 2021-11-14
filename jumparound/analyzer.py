@@ -1,5 +1,6 @@
 import os
 import threading
+from dataclasses import dataclass
 from typing import List
 
 from rich import print as rprint
@@ -8,8 +9,23 @@ from .cache import Cache, CacheRepo
 from .config import Config
 
 
+@dataclass
+class Project:
+    basename: str
+    dirname: str
+    path: str
+
+    @staticmethod
+    def init_from_path(path: str):
+        return Project(
+            path=path,
+            basename=os.path.basename(path),
+            dirname=os.path.dirname(path),
+        )
+
+
 class Analyzer:
-    _found: List[str] = []
+    _found: List[Project] = []
     _config: Config
     _cache_repo: CacheRepo
 
@@ -22,7 +38,11 @@ class Analyzer:
             cache = self._cache_repo.load()
             if not cache.is_stale():
                 if callback:
-                    callback(cache.directories)
+                    callback(
+                        list(
+                            map(lambda x: Project.init_from_path(x), cache.directories)
+                        )
+                    )
                 if debug:
                     rprint("loading from cache")
                     rprint(cache.directories)
@@ -36,13 +56,16 @@ class Analyzer:
             threads.append(t)
         for t in threads:
             t.join()
-        self._cache_repo.store(Cache(directories=self._found))
+        self._cache_repo.store(Cache(directories=self._found_paths()))
         if callback:
             callback(self._found)
         if debug:
             rprint("not using cache")
             rprint(self._found)
         self._found = []
+
+    def _found_paths(self):
+        return list(map(lambda x: x.path, self._found))
 
     def _walk_path(self, path: str) -> None:
         for root, dirs, files in os.walk(path, topdown=True):
@@ -51,4 +74,4 @@ class Analyzer:
             match_dirs = [d for d in dirs if d in self._config.path_stops]
             match_files = [f for f in files if f in self._config.path_stops]
             if match_dirs or match_files:
-                self._found.append(root)
+                self._found.append(Project.init_from_path(root))
