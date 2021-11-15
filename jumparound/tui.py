@@ -37,25 +37,25 @@ class ListBody(Widget):
 
                 if x == self.cursor_pos:
                     lines.append(
-                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {line} [/white on grey27]"
+                        f"[bold red on grey27]❯[/bold red on grey27][bright_white on grey27] {line} [/bright_white on grey27]"
                     )
                 else:
                     lines.append(f"[grey27 on grey27] [/grey27 on grey27] {line}")
 
         return "\n".join(lines)
 
-    def format_line(self, item: Project):
+    def format_line(self, project: Project):
         view_mode = self.config.get_view_mode()
         if view_mode == ViewMode.BASIC:
             # only shows the final directory name
-            return item.basename
+            return f"{project.name}"
         elif view_mode == ViewMode.COMBINED:
             # path is displayed in the format of `folder (/path/to)`
-            return f"{item.basename} [grey42]({item.dirname})[/grey42]"
+            return f"{project.name} [dim]({project.dirname})[/dim]"
         elif view_mode == ViewMode.FULL:
             # the default, shows the full path
-            return item.path
-        return item.path
+            return f"[dim]{project.dirname}/[/dim]{project.name}"
+        return project.path
 
     def set_cursor_pos(self, cursor_pos: int) -> None:
         self.cursor_pos = cursor_pos

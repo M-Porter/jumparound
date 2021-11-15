@@ -46,13 +46,12 @@ def to():
 def analyze():
     conf = Config()
 
-    def print_callback(projects: List[str]) -> None:
-        rprint(f"Found {len(projects)} projects!")
-        rprint()
-        rprint(projects)
+    def print_callback(projects: List[Project]) -> None:
+        for p in projects:
+            rprint(f"{p.name}: {p.path}")
         rprint()
         rprint(
-            f"If any of these seem incorrectly, try updating your config located at {conf.get_full_config_file_path()}"
+            f"Found {len(projects)} projects! If any of these seem incorrect, try updating your config located at {conf.get_full_config_file_path()} or by running [code]jumparound edit-config[/code]."
         )
 
     analyzer = Analyzer(conf)

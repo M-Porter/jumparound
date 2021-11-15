@@ -21,8 +21,6 @@ DEFAULT_SEARCH_EXCLUDES: List[str] = [
     "/vendor",
     "/venv",
     "/ios/Pods",
-    "/.idea",
-    "/go/pkg",
 ]
 DEFAULT_PATH_STOPS: List[str] = [
     ".git",

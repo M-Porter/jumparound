@@ -9,6 +9,6 @@ def match_items(needle: str, haystack: List[Project]) -> List:
     rf = re.IGNORECASE | re.UNICODE
 
     def search_func(p: Project):
-        return re.search(r, p.path, flags=rf)
+        return re.search(r, p.name, flags=rf)
 
     return list(filter(search_func, haystack))
