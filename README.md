@@ -22,7 +22,7 @@ or
 
 ```
 j() {
-    cd "$(jumparound to)"
+    cd "$(jumparound to)" || return
 }
 ```
 
@@ -32,8 +32,7 @@ j() {
 
 * Have python `poetry` installed.
 * Clone this repository.
-* Run `poetry install`
-* You should now be able to run `poetry run jumparound`
+* Run `make setup`
 
 ### Generate `resource` blocks for the brew Formula
 
