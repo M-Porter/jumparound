@@ -29,12 +29,10 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       - name: Run isort
-        continue-on-error: true
         run: |
           source .venv/bin/activate
           isort . --check --diff
       - name: Run black
-        continue-on-error: true
         run: |
           source .venv/bin/activate
           black . --check --diff

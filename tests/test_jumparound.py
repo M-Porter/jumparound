@@ -2,6 +2,7 @@ import re
 
 from jumparound import __version__
 
+
 def test_version():
     with open("pyproject.toml", "r") as f:
         lines = f.read()
