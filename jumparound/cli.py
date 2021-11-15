@@ -21,7 +21,7 @@ def cli():
 def to():
     callback_val: Union[Project, None] = None
 
-    def on_quit_callback(val: Project) -> None:
+    def on_quit_callback(val: Union[Project, None]) -> None:
         nonlocal callback_val
         callback_val = val
 

@@ -75,7 +75,7 @@ class InputBox(Widget):
 
 
 class JumpAroundApp(App):
-    on_quit_callback: Callable[[Project], None] = None
+    on_quit_callback: Callable[[Union[Project, None]], None] = None
 
     input_text: Union[Reactive[str], str] = Reactive("")
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
@@ -89,7 +89,10 @@ class JumpAroundApp(App):
     config: Config
 
     def __init__(
-        self, *args, on_quit_callback: Callable[[Project], None] = None, **kwargs
+        self,
+        *args,
+        on_quit_callback: Callable[[Union[Project, None]], None] = None,
+        **kwargs,
     ):
         self.on_quit_callback = on_quit_callback
         super().__init__(*args, **kwargs)
@@ -102,7 +105,10 @@ class JumpAroundApp(App):
         await self.bind(Keys.Enter, "callback_and_quit")
 
     async def action_callback_and_quit(self):
-        self.on_quit_callback(self.filtered_projects[self.cursor_pos] or "")
+        try:
+            self.on_quit_callback(self.filtered_projects[self.cursor_pos])
+        except IndexError:
+            self.on_quit_callback(None)
         await self.action_quit()
 
     def action_move_cursor_up(self):
