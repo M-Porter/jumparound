@@ -26,6 +26,9 @@ j() {
 }
 ```
 
+You can also source the shell script in `bin/jumparound.sh`. If you may already have a function `j` on your system, you can specify your own function name for jumparound by exporting `JUMPAROUND_FUNC`.
+
+
 ## Development
 
 ### Setup
