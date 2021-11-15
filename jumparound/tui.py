@@ -37,25 +37,25 @@ class ListBody(Widget):
 
                 if x == self.cursor_pos:
                     lines.append(
-                        f"[bold red on grey27]❯[/bold red on grey27][white on grey27] {line} [/white on grey27]"
+                        f"[bold red on grey27]❯[/bold red on grey27][bright_white on grey27] {line} [/bright_white on grey27]"
                     )
                 else:
                     lines.append(f"[grey27 on grey27] [/grey27 on grey27] {line}")
 
         return "\n".join(lines)
 
-    def format_line(self, item: Project):
+    def format_line(self, project: Project):
         view_mode = self.config.get_view_mode()
         if view_mode == ViewMode.BASIC:
             # only shows the final directory name
-            return item.basename
+            return f"{project.name}"
         elif view_mode == ViewMode.COMBINED:
             # path is displayed in the format of `folder (/path/to)`
-            return f"{item.basename} [grey42]({item.dirname})[/grey42]"
+            return f"{project.name} [dim]({project.dirname})[/dim]"
         elif view_mode == ViewMode.FULL:
             # the default, shows the full path
-            return item.path
-        return item.path
+            return f"[dim]{project.dirname}/[/dim]{project.name}"
+        return project.path
 
     def set_cursor_pos(self, cursor_pos: int) -> None:
         self.cursor_pos = cursor_pos
@@ -75,7 +75,7 @@ class InputBox(Widget):
 
 
 class JumpAroundApp(App):
-    on_quit_callback: Callable[[Project], None] = None
+    on_quit_callback: Callable[[Union[Project, None]], None] = None
 
     input_text: Union[Reactive[str], str] = Reactive("")
     cursor_pos: Union[Reactive[int], int] = Reactive(0)
@@ -89,7 +89,10 @@ class JumpAroundApp(App):
     config: Config
 
     def __init__(
-        self, *args, on_quit_callback: Callable[[Project], None] = None, **kwargs
+        self,
+        *args,
+        on_quit_callback: Callable[[Union[Project, None]], None] = None,
+        **kwargs,
     ):
         self.on_quit_callback = on_quit_callback
         super().__init__(*args, **kwargs)
@@ -102,7 +105,10 @@ class JumpAroundApp(App):
         await self.bind(Keys.Enter, "callback_and_quit")
 
     async def action_callback_and_quit(self):
-        self.on_quit_callback(self.filtered_projects[self.cursor_pos] or "")
+        try:
+            self.on_quit_callback(self.filtered_projects[self.cursor_pos])
+        except IndexError:
+            self.on_quit_callback(None)
         await self.action_quit()
 
     def action_move_cursor_up(self):
@@ -126,6 +132,7 @@ class JumpAroundApp(App):
             self.input_text += key.key
 
     def watch_input_text(self, input_text) -> None:
+        self.cursor_pos = 0
         self.input_box.set_input_text(input_text)
         self.do_search()
 
