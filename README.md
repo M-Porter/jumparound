@@ -22,7 +22,7 @@ or
 
 ```
 j() {
-    cd "$(jumparound to)"
+    cd "$(jumparound to)" || return
 }
 ```
 
