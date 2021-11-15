@@ -126,6 +126,7 @@ class JumpAroundApp(App):
             self.input_text += key.key
 
     def watch_input_text(self, input_text) -> None:
+        self.cursor_pos = 0
         self.input_box.set_input_text(input_text)
         self.do_search()
 
