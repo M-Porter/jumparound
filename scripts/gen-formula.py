@@ -21,10 +21,10 @@ def gen_formula():
         pkg_url = f"https://pypi.org/project/{name}/{version}/"
         r = requests.get(f"{pkg_url}#files")
 
+        tar_gz_name = f"{name}-{version}.tar.gz"
+
         soup = BeautifulSoup(r.text, features="html.parser")
-        text_regexp = re.compile(
-            re.escape(f"{name}-{version}.tar.gz"), flags=re.IGNORECASE
-        )
+        text_regexp = re.compile(re.escape(tar_gz_name), flags=re.IGNORECASE)
         s = soup.body.find(text=text_regexp)
         if not s:
             continue
@@ -35,8 +35,17 @@ def gen_formula():
             if "hash" in link["href"]:
                 rr = requests.get(pkg_url + link["href"])
                 good_soup = BeautifulSoup(rr.text, features="html.parser")
-                ss = good_soup.body.find(text=re.compile(re.escape("SHA256")))
-                dep_hash = ss.parent.parent.find("code").text
+                ss = good_soup.body.find(
+                    "caption",
+                    text=re.compile(
+                        re.escape(f"Hashes for {tar_gz_name}"), flags=re.IGNORECASE
+                    ),
+                )
+                dep_hash = (
+                    ss.parent.find(text=re.compile(re.escape("SHA256")))
+                    .parent.parent.find("code")
+                    .text
+                )
 
         if dep_hash and dep_url:
             d = {

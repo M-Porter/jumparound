@@ -34,7 +34,6 @@ def to():
 
     JumpAroundApp.run(
         title=__cli_name__,
-        log="debug.log",
         console=console,
         on_quit_callback=on_quit_callback,
     )
