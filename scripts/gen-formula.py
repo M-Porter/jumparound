@@ -17,18 +17,15 @@ end
 
 
 def gen_formula():
-    requirements = subprocess.check_output(
-        ["poetry", "export", "--without-hashes"]
-    ).decode("utf-8")
-
-    for line in requirements.splitlines():
-        requirements = str(line).split(";", 1)[0]
-        [name, version] = requirements.split("==", 1)
+    for [name, version] in get_requirements():
         pkg_url = f"https://pypi.org/project/{name}/{version}/"
         r = requests.get(f"{pkg_url}#files")
 
         soup = BeautifulSoup(r.text, features="html.parser")
-        s = soup.body.find(text=re.compile(re.escape(f"{name}-{version}.tar.gz")))
+        text_regexp = re.compile(
+            re.escape(f"{name}-{version}.tar.gz"), flags=re.IGNORECASE
+        )
+        s = soup.body.find(text=text_regexp)
         if not s:
             continue
         dep_url = s.parent["href"]
@@ -48,6 +45,16 @@ def gen_formula():
                 "sha256": dep_hash,
             }
             print(resource_template.substitute(d))
+
+
+def get_requirements():
+    requirements = subprocess.check_output(
+        ["poetry", "export", "--without-hashes"]
+    ).decode("utf-8")
+
+    for line in requirements.splitlines():
+        requirement = str(line).split(";", 1)[0]
+        yield requirement.split("==", 1)
 
 
 if __name__ == "__main__":
