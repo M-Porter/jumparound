@@ -14,20 +14,18 @@ Quickly jump around between your projects.
 `jumparound` can be used on its own or as a part of other scripts. The most common usage is in
 conjunction with `cd`.
 
-```
-cd "$(jumparound to)"
-```
-
-or
-
-```
-j() {
-    cd "$(jumparound to)" || return
-}
+When installing with `brew`, helper scripts are installed. They can be sourced so you don't have to do any other manual setup.
+```sh
+source "$(brew --prefix jumparound)/jumparound.sh"
+# jumparound shortcut is "j"
 ```
 
-You can also source the shell script in `bin/jumparound.sh`. If you may already have a function `j` on your system, you can specify your own function name for jumparound by exporting `JUMPAROUND_FUNC`.
-
+If you may already have a function `j` on your system, you can specify your own function name for jumparound by exporting `JUMPAROUND_FUNC`.
+```sh
+export JUMPAROUND_FUNC="ja"
+source "$(brew --prefix jumparound)/jumparound.sh"
+# jumparound shortcut is now "ja"
+```
 
 ## Development
 
