@@ -3,7 +3,7 @@ from collections import Callable
 from threading import Thread
 from typing import List, Union
 
-from rich.console import RenderableType
+from rich.console import RenderableType, Console
 from textual import events
 from textual.app import App
 from textual.keys import Keys
@@ -25,7 +25,6 @@ class ListBody(Widget):
         if not config:
             raise TypeError("ListBody() needs keyword-only argument config")
         self.config = config
-        self.console._highlight = False
         super().__init__(*args, **kwargs)
 
     def render(self) -> RenderableType:
@@ -66,10 +65,6 @@ class ListBody(Widget):
 
 class InputBox(Widget):
     input_text: Union[Reactive[str], str] = Reactive("")
-
-    def __init__(self, *args, **kwargs):
-        self.console._highlight = False
-        super().__init__(*args, **kwargs)
 
     def render(self) -> RenderableType:
         return f"[blue]❯[/blue] {self.input_text}"
