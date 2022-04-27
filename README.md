@@ -4,10 +4,11 @@ Quickly jump around between your projects.
 
 ## Installation
 
-`jumparound` is part of the `m-porter/tap` brew cask.
-
-1. `brew tap m-porter/tap`
-2. `brew install m-porter/tap/jumparound`
+```
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
+python3 -m pipx install jumparound
+```
 
 ## Usage
 
