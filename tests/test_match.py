@@ -1,7 +1,7 @@
 from os.path import basename, dirname
 
-from src.jumparound import Project
-from src.jumparound import match_items
+from src.jumparound.analyzer import Project
+from src.jumparound.match import match_items
 
 
 def test_match():

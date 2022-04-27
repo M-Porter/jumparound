@@ -9,5 +9,5 @@ def test_version():
     matches = re.search('version = "([0-9]+\\.[0-9]+\\.[0-9]+)"', lines).groups()
     pyproject_version = matches[0]
 
-    assert pyproject_version == "0.4.0"
-    assert __version__ == "0.4.0"
+    assert pyproject_version == "1.0.0"
+    assert __version__ == "1.0.0"
