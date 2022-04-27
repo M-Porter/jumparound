@@ -1,10 +1,9 @@
 import os
 from pathlib import Path
 from typing import Dict, List, TextIO, Union
-
+from enum import IntEnum
 import yaml
 
-from .enum import ViewMode
 
 DEFAULT_CACHE_FILE_NAME: str = "cache"
 DEFAULT_SEARCH_INCLUDES: List[str] = [
@@ -33,6 +32,17 @@ DEFAULT_PATH_STOPS: List[str] = [
 ]
 JUMPAROUND_DIRNAME = ".jumparound"
 JUMPAROUND_CONFIG_NAME = "config.yaml"
+
+
+class ViewMode(IntEnum):
+    BASIC = 1
+    FULL = 2
+    COMBINED = 3
+
+    def next(self):
+        if self.value == max(ViewMode):
+            return ViewMode(min(ViewMode))
+        return ViewMode(self.value + 1)
 
 
 class Config:

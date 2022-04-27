@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jumparound"
-version = "1.1.0"
+version = "1.1.1"
 homepage = "https://github.com/M-Porter/jumparound"
 description = "Quickly jump around between your projects."
 authors = ["Matt Porter <mtp5129@gmail.com>"]

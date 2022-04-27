@@ -11,8 +11,7 @@ from textual.reactive import Reactive
 from textual.widget import Widget
 
 from .analyzer import Analyzer, Project
-from .config import Config
-from .enum import ViewMode
+from .config import Config, ViewMode
 from .match import match_items
 
 
