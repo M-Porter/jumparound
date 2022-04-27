@@ -1,6 +1,6 @@
 import re
 
-from src.jumparound import __version__
+from jumparound import __version__
 
 
 def test_version():
