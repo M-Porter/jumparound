@@ -40,6 +40,8 @@ def to():
 
     if callback_val:
         print(callback_val.path)
+    else:
+        print(".")
 
 
 @click.command()
