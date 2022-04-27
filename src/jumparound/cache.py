@@ -5,7 +5,7 @@ from typing import Dict, List
 
 import yaml
 
-from src.jumparound.config import Config
+from jumparound.config import Config
 
 # stale cache time in seconds
 STALE_CACHE_TIME = 86400
